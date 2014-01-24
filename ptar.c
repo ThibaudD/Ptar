@@ -69,7 +69,7 @@ void *travail(void *null){
 void lister(int fd, struct header_posix_ustar files_info, char* archive){
 	int size = 0;
 	int lecture = read(fd,&files_info,512);
-	printf("Liste des dossiers/fichiers contenus dans l'archive \"%s\" :\n", archive);
+	printf("List of directories/files in the archive: \"%s\" :\n", archive);
 	printf("%s\n",files_info.name);
 	while(lecture != 0){
 		size = octal_to_dec(files_info.size);
@@ -94,7 +94,7 @@ void extraire_dossier(char* archive, char* chemin){
 		strcat(slash,archive);
 		strncat(chemin,slash,strlen(slash)-4);
 	}
-	printf("chemin : %s\n",chemin);
+	printf("path : %s\n",chemin);
 	if(chdir(chemin)!=0){
 		if(mkdir(chemin,00700) == 0){
 			char *arch_dossier = malloc(FILENAME_MAX*sizeof(char));
@@ -102,9 +102,9 @@ void extraire_dossier(char* archive, char* chemin){
 			arch_dossier[strlen(arch_dossier)-4] = '\0';
 			if(d != NULL){
 				d[strlen(d)-4] = '\0';
-				printf("creation dossier %s\n",d+1);
+				printf("creation of the directory %s\n",d+1);
 			}
-			else printf("creation dossier %s\n",arch_dossier);
+			else printf("creation of the directory %s\n",arch_dossier);
 			chdir(chemin);
 			//free(d);
 			//free(arch_dossier);
@@ -116,9 +116,9 @@ void extraire_dossier(char* archive, char* chemin){
 void *creation_fichier(void *arg){
 	struct dataThread *mine = malloc(sizeof(struct dataThread));
 	mine = (struct dataThread *)arg;
-	printf("nom_fichier_dansThread : **%s**\n", mine->name);
+	//printf("nom_fichier_dansThread : **%s**\n", mine->name);
 
-	printf("creation fichier %s\n",mine->name);
+	printf("creation file %s\n",mine->name);
 	int fd_file = creat(mine->name,S_IRWXU);
 	int fin = mine->size%512;
 	int nb_bloc = mine->size/512;
@@ -225,7 +225,7 @@ void extraire(int fd, struct header_posix_ustar files_info, char* archive, char*
 					dossier = strndup(name, decal);
 					if(chdir(dossier)!=0){
 						if(mkdir(dossier,00700) == 0){
-							printf("creation dossier %s\n",name);
+							printf("create directory %s\n",name);
 							chdir(dossier);
 						}
 					}
@@ -234,7 +234,7 @@ void extraire(int fd, struct header_posix_ustar files_info, char* archive, char*
 				}
 				if(chdir(dossier)!=0){
 					if(mkdir(name,00700)== 0){
-						printf("creation dossier %s\n",name);
+						printf("create directory %s\n",name);
 					}
 				}
 				chdir(chemin);
@@ -270,7 +270,7 @@ void extraire(int fd, struct header_posix_ustar files_info, char* archive, char*
 				data.fd = fd_1;
 				data.files_info = files_info;
 				data.name = name;
-				printf("nom_fichier_avantThread : **%s**\n", data.name);
+				//printf("nom_fichier_avantThread : **%s**\n", data.name);
 				pthread_create (&th1, NULL, creation_fichier, (void *)&data);
 				if(rc = pthread_join(th1, (void**)&status)){ // attend la fin du thread
 					printf("ERREUR de _join() : %d\n", rc);
@@ -286,14 +286,14 @@ void extraire(int fd, struct header_posix_ustar files_info, char* archive, char*
 
 int main(int argc, char *argv[]){
 	if(argc < 3){
-		printf("ptar a besoin d'un argument:\n -l pour lister les fichiers \n -x pour extraire \n -xd pour extraire dans un dossier\n");
+		printf("ptar: you must specify one of the options:\n -l list files in the archive \n -x extract files in the current directory \n -xd extract files in a directory with the name of the tar file\n");
 		return 0;
 	}
 	char *archive = argv[2];
 
 	int fd=open(archive,O_RDONLY);
 	if(fd==-1){
-		printf("Archive introuvable\n");
+		printf("Archive not found\n");
 		exit(0);
 	}
 	struct header_posix_ustar files_info;
