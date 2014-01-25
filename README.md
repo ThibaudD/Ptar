@@ -1,7 +1,9 @@
 ##Ptar:Tar extracting tool, multithreaded and sustainable
 
 ####Operation mode:
-
+ - -q     quiet
+ - -v     verbose
  - -l     list files in the archive
- - -x     extract files in the current directory 
- - -xd    extract files in a directory with the name of the tar file
+ - -d [directory]     extract files in a directory 
+ - -t nb_threads    define the number of threads 
+ - -h     help
